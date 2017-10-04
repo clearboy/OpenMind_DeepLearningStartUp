@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-# import numpy as np
+#import numpy as np
 import re
 
 filename = "happiness_seg.txt"
@@ -46,15 +46,28 @@ for word in words2:
             indexWords[word] =  index
             index = index + 1
 
+wordCount = index
 # print(arrayWord)
 
 print(indexWords)
 
 print("-"*20)
-print("Total words: %d"%index)
+print("Total words: %d"%wordCount)
 
 
+## create the array
 
+#np.zeros(wordCount,wordCount)
 
+#for word in words2:
+# for iWord, word in enumerate(words2):
+for i in range(len(words2)-1):
+    if len(words2[i])<1 or len(words2[i+1])<1:
+        continue
+    print("%s-%s"%(words2[i],words2[i+1]))
+    #iRow = indexWords[words2[i]]
+    #iCol = indexWords[words2[i+1]] #   np(iRow,iCol) = np(iRow,iCol) + 1
+    #print ("(%d,%d)"%(iRow,iCol))
 
+ 
 
