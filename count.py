@@ -4,10 +4,11 @@
 import numpy as np
 import re
 
-iDebug = 4   # level of debug
+iDebug = 2   # level of debug
 
 filename = "happiness_seg.txt"
-filename = "happiness.txt"  # for test
+if iDebug>3:
+    filename = "happiness.txt"  # for test
 
 ## load file
 print("-"*20)
@@ -32,7 +33,7 @@ print("File length:%d"%len(file_context))
 print("-"*40)
 print("split input to wordsSplited...")
 
-textSplit = re.split(r'[： 。 ； ， ： “ ”（ ） 、 ？ 《 》 \s \t,.-]*',file_context)
+textSplit = re.split(r'[： 。 ； ， ： “ ”（ ） 、 ？ 《 》 \s \t,.-―]*',file_context)
 textLen = len(textSplit)
 if iDebug>3:
     print("text splited:")
@@ -41,20 +42,19 @@ if iDebug>3:
 print("-"*40)
 print("Total wordsSplited: %d"%textLen)
 
-wordsIndex = {}
-
+wordsArray =[]
 N = 0
 for word in textSplit:
     if len(word)>0:
-        if not word in wordsIndex:
-            wordsIndex[word]=N
+        if not word in wordsArray:
+            wordsArray.append(word)
             N = N+1
 
 print("Total words: %d"%N)
 
 if iDebug>3:
-    print("words index:")
-    print(wordsIndex)
+    print("words array:")
+    print(wordsArray)
 
 ## create the array
 print("-"*40)
@@ -76,8 +76,8 @@ for i in range(textLen-1):
         continue
 
     # update the matrix
-    iRow = wordsIndex[wordCurrent]
-    iCol = wordsIndex[wordNext] 
+    iRow = wordsArray.index(wordCurrent)
+    iCol = wordsArray.index(wordNext)
     newValue = arrayCounts[iRow,iCol] + 1
     arrayCounts[iRow,iCol] = newValue
     if iDebug>2:
@@ -90,23 +90,20 @@ for i in range(textLen-1):
         iIndexMin = listTopWords[0]
         listMinvalue = arrayCounts[iIndexMin[0],iIndexMin[1]]    
         for iIndex in listTopWords:
-            if arrayCounts[iIndex[0],iIndex[1]] < listMinvalue:
-                print("my:%d,%d=%d"%(iIndex[0],iIndex[1],arrayCounts[iIndex[0],iIndex[1]]))
+            iValue = arrayCounts[iIndex[0],iIndex[1]]
+            if  iValue < listMinvalue:
+                #print("my:%d,%d=%d"%(iIndex[0],iIndex[1],arrayCounts[iIndex[0],iIndex[1]]))
                 iIndexMin = iIndex
-                listMinvalue = arrayCounts[iIndex]
+                listMinvalue = iValue
         if iDebug>3:
             print("the minum index is")
             print(listMinvalue)
-            a = wordsIndex.keys()
-            print(len(a))
-            #str = a[iIndexMin[0]]
-            print("(%d,%d)=%d:"%(iIndexMin[0],iIndexMin[1],arrayCounts[iIndexMin[0],iIndexMin[1]]))
-            print(str)
-#            print("%s %s"%(wordsIndex[iIndexMin[0]]，wordsIndex[iIndexMin[1]]))
-        if newValue > listMinvalue:
+            print("(%d,%d)=%d:%s %s"%(iIndexMin[0],iIndexMin[1],arrayCounts[iIndexMin[0],iIndexMin[1]],wordsArray[iIndexMin[0]],wordsArray[iIndexMin[1]]))
+        if (newValue > listMinvalue) and (not [iRow,iCol] in listTopWords):
             listTopWords.remove(iIndexMin)
             listTopWords.append([iRow,iCol])
-        print(listTopWords)
+            if iDebug>3:
+                print(listTopWords)
 
 
 '''
@@ -128,14 +125,21 @@ for i in range(textLen-1):
         listIndex = iTopList
 '''
 
-print("-"*20)
-print(listTopWords)
-for iIndex in listTopWords:
-    print(iIndex)
-    print(arrayCounts[iIndex[0],iIndex[1]])
+totalCount = np.sum(arrayCounts)
 
-print(arrayCounts)
-print(np.size(arrayCounts))
-print(np.max(arrayCounts))
+print("-"*20)
+print("Final top words:")
+
+for iIndex in listTopWords:
+    cnt = arrayCounts[iIndex[0],iIndex[1]]
+    print("%s %s\t:%.2f%%(%d of %d)"%(wordsArray[iIndex[0]],wordsArray[iIndex[1]],100*cnt/totalCount,cnt,totalCount))
+
+if iDebug>3:
+    print(arrayCounts)
+    print(np.max(arrayCounts))
+    print(listTopWords)
+    for iIndex in listTopWords:
+        print("(%d,%d)=%d/%d:%s %s"%(iIndex[0],iIndex[1],arrayCounts[iIndex[0],iIndex[1]],totalCount,wordsArray[iIndex[0]],wordsArray[iIndex[1]]))
+
 # print("sum:%d"%totalCount)
 
