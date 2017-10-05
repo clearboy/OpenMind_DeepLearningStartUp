@@ -17,7 +17,7 @@ print("Loading file...")
 file_object = open(filename,'r',encoding="UTF-8") 
 
 try:
-    file_context = file_object.read() # 文件注释
+    file_context = file_object.read() 
 finally:
     file_object.close()
 
@@ -83,6 +83,7 @@ for i in range(textLen-1):
     if iDebug>2:
         print ("(%8d,%8d)=%4d:%s %s"%(iRow,iCol,arrayCounts[iRow,iCol],wordCurrent,wordNext))
 
+    # search for the top 10 word pairs
     if (len(listTopWords)<10) and  (not [iRow,iCol] in listTopWords):
         listTopWords.append([iRow,iCol])
     else:
@@ -105,26 +106,7 @@ for i in range(textLen-1):
             if iDebug>3:
                 print(listTopWords)
 
-
-'''
-    # update the top word list
-    # iTopList = N*iRow+iCol
-    iTopList = [iRow,iCol]
-    if not (iTopList in listTopWords):
-        if (len(listTopWords)<10):
-            listTopWords.append(iTopList)
-        else:
-            if newValue > listMinvalue:
-                print(listTopWords)
-                listTopWords.remove(listIndex)
-                listTopWords.append(iTopList)
-                print(listTopWords)
-    if newValue > listMinvalue:
-        print("%d-->%d"%(listMinvalue,newValue))
-        listMinvalue = newValue
-        listIndex = iTopList
-'''
-
+# print the final results
 totalCount = np.sum(arrayCounts)
 
 print("-"*20)
@@ -140,6 +122,3 @@ if iDebug>3:
     print(listTopWords)
     for iIndex in listTopWords:
         print("(%d,%d)=%d/%d:%s %s"%(iIndex[0],iIndex[1],arrayCounts[iIndex[0],iIndex[1]],totalCount,wordsArray[iIndex[0]],wordsArray[iIndex[1]]))
-
-# print("sum:%d"%totalCount)
-
